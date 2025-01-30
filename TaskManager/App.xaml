@@ -1,0 +1,39 @@
+﻿<Application x:Class="TaskManager.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:TaskManager"
+             xmlns:view="clr-namespace:TaskManager.View"
+             xmlns:viewModel="clr-namespace:TaskManager.ViewModel">
+    
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/Style.xaml"/>
+
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <DataTemplate DataType="{x:Type viewModel:MainViewModel}">
+                <view:MainWindow/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModel:TaskListViewModel}">
+                <view:TaskListView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModel:AddTaskViewModel}">
+                <view:AddTaskView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModel:EditTaskViewModel}">
+                <view:EditTaskView/>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModel:PrintTaskViewModel}">
+                <view:PrintTaskView/>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

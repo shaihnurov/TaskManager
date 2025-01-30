@@ -1,0 +1,41 @@
+﻿<mah:MetroWindow x:Class="TaskManager.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TaskManager"
+        xmlns:viewModel="clr-namespace:TaskManager.ViewModel"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Title="Task Manager" MinHeight="750" MinWidth="1100"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
+        ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterScreen">
+
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <Button Command="{Binding TaskListViewCommand}" Content="Список задач"/>
+
+            <Button Command="{Binding AddTaskViewCommand}" Content="Добавить задачу"/>
+
+            <Button Command="{Binding PrintTaskViewCommand}" Content="Печать задач"/>
+
+            <Button Command="{Binding SyncTasksCommand}" Content="Синхронизировать"/>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Grid.Column="0">
+            <ContentControl Content="{Binding CurrentView}"/>
+        </Border>
+    </Grid>
+</mah:MetroWindow>

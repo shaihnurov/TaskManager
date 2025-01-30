@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="TaskManager.View.EditTaskView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TaskManager.View"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:viewModel="clr-namespace:TaskManager.ViewModel"
+             mc:Ignorable="d" Style="{StaticResource Page_Style}"
+             d:DesignHeight="750" d:DesignWidth="1200" d:Background="White">
+
+    <ScrollViewer>
+        <Grid>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                <!-- Форма для редактирования задачи -->
+                <Border BorderThickness="0.2" BorderBrush="Black" Background="Transparent" CornerRadius="20"
+                        Margin="0 50 0 0" Padding="35" Width="Auto" MaxWidth="700" Height="Auto" HorizontalAlignment="Stretch">
+                    <Grid VerticalAlignment="Top">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Редактирование задачи" FontSize="40" VerticalAlignment="Top" Grid.Row="0"
+                                   TextWrapping="Wrap" FontWeight="Light" HorizontalAlignment="Center"/>
+
+                        <!-- Поля для редактирования задачи -->
+                        <WrapPanel Grid.Row="1" Orientation="Vertical">
+                            <TextBlock Text="Название задачи" FontWeight="Light" FontSize="18" Margin="40 35 0 0"/>
+                            <TextBox FontSize="18" Foreground="#3393DF" Margin="20 10 0 0" MinWidth="300" Width="Auto" FontWeight="Light"
+                                     TextWrapping="Wrap" Style="{StaticResource TextBox}" Height="Auto" Text="{Binding Name}"/>
+                        </WrapPanel>
+
+                        <WrapPanel Grid.Row="2" Orientation="Vertical">
+                            <TextBlock Text="Описание задачи" FontWeight="Light" FontSize="18" Margin="40 35 0 0"/>
+                            <TextBox FontSize="18" Foreground="#3393DF" Margin="20 10 0 0" MinWidth="300" Width="Auto" FontWeight="Light"
+                                     TextWrapping="Wrap" Style="{StaticResource TextBox}" Height="Auto" Text="{Binding Description}"/>
+                        </WrapPanel>
+
+                        <WrapPanel Grid.Row="3" Orientation="Vertical">
+                            <TextBlock Text="Статус задачи" FontWeight="Light" FontSize="18" Margin="40 35 0 0"/>
+                            <TextBox FontSize="18" Foreground="#3393DF" Margin="20 10 0 0" MinWidth="300" Width="Auto" FontWeight="Light"
+                                     TextWrapping="Wrap" Style="{StaticResource TextBox}" Height="Auto" Text="{Binding Status}"/>
+                        </WrapPanel>
+
+                        <WrapPanel Grid.Row="4" Orientation="Vertical" Margin="0 0 0 20">
+                            <TextBlock Text="Дедлайн задачи" FontSize="18" FontWeight="Light" Margin="40 35 0 0"/>
+                            <mah:DateTimePicker SelectedDateTime="{Binding Deadline}" Margin="20 10 0 0" MinWidth="300" Width="Auto" Height="Auto" 
+                                                FontWeight="Light" Culture="ru"/>
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+
+                <Button Style="{StaticResource ButtonStyle}" Content="Сохранить изменения" Margin="20" Command="{Binding UpdateTaskCommand}"/>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
