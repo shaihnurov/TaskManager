@@ -68,7 +68,6 @@ namespace TaskManager.ViewModel
 
                 // Добавляем задачу в коллекции списка (для обновления UI)
                 _taskListViewModel.Tasks.Add(newTask);
-                _taskListViewModel.FilteredTasks.Add(newTask);
 
                 // Переключаем представление на список задач
                 _mainViewModel.CurrentView = _taskListViewModel;

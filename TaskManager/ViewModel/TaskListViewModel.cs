@@ -16,8 +16,7 @@ namespace TaskManager.ViewModel
         [ObservableProperty]
         private ObservableCollection<TaskModel> _tasks = []; // Полный список задач
 
-        [ObservableProperty]
-        private ObservableCollection<TaskModel> _filteredTasks = []; // Отфильтрованный список задач
+        private ObservableCollection<TaskModel> _allTasks = []; // Начальная коллекция задач
 
         [ObservableProperty]
         private ObservableCollection<string> _statusList = ["Все", "В процессе", "Завершено"];
@@ -90,13 +89,20 @@ namespace TaskManager.ViewModel
             {
                 var tasks = await TaskService.GetTasks();
 
-                Tasks.Clear();
+                _allTasks.Clear();
                 foreach (var task in tasks)
+                {
+                    _allTasks.Add(task);
+                }
+
+                // После загрузки данных, заполняем Tasks
+                Tasks.Clear();
+                foreach (var task in _allTasks)
                 {
                     Tasks.Add(task);
                 }
 
-                FilterTasks();
+                FilterTasks(); // Применим фильтрацию
             }
             catch (Exception ex)
             {
@@ -104,25 +110,24 @@ namespace TaskManager.ViewModel
                 Log.Error(ex, "Ошибка при загрузке задач");
             }
         }
+
         //Метод для фильтрации списка задач
         private void FilterTasks()
         {
             try
             {
-                if (Tasks == null) return;
-
-                var filtered = Tasks.AsEnumerable();
+                var filtered = _allTasks.AsEnumerable();
 
                 // Фильтрация по имени
                 if (!string.IsNullOrEmpty(SelectedName))
                 {
-                    filtered = filtered.Where(task => task.Name!.Contains(SelectedName, StringComparison.OrdinalIgnoreCase));
+                    filtered = filtered.Where(task => task.Name.Contains(SelectedName, StringComparison.OrdinalIgnoreCase));
                 }
 
                 // Фильтрация по статусу
                 if (SelectedStatus != "Все")
                 {
-                    filtered = filtered.Where(task => task.Status!.Equals(SelectedStatus, StringComparison.OrdinalIgnoreCase));
+                    filtered = filtered.Where(task => task.Status.Equals(SelectedStatus, StringComparison.OrdinalIgnoreCase));
                 }
 
                 // Фильтрация по дате создания
@@ -144,10 +149,12 @@ namespace TaskManager.ViewModel
                     filtered = filtered.Where(task => (task.Deadline - now).TotalHours <= 24 && task.Status == "В процессе");
                 }
 
-                FilteredTasks.Clear();
-                foreach (var task in filtered)
+                // Применение фильтрации к Tasks
+                var filteredList = filtered.ToList();
+                Tasks.Clear();
+                foreach (var task in filteredList)
                 {
-                    FilteredTasks.Add(task);
+                    Tasks.Add(task);
                 }
             }
             catch (ArgumentNullException nullEx)
@@ -166,6 +173,7 @@ namespace TaskManager.ViewModel
                 Log.Error(ex, "Ошибка при фильтрации задач");
             }
         }
+
         //Метод удаления задач
         [RelayCommand]
         private async Task DeleteTask(object parameter)
@@ -180,7 +188,6 @@ namespace TaskManager.ViewModel
                     currentTask.Status = null;
 
                     Tasks.Remove(currentTask);
-                    FilteredTasks.Remove(currentTask);
 
                     await TaskService.DeleteTask(currentTask);
 
@@ -200,6 +207,7 @@ namespace TaskManager.ViewModel
                 Log.Error(ex, "Ошибка при удалении задачи");
             }
         }
+
         //Метод для вызова View редактирования
         [RelayCommand]
         private void EditTask(object parameter)
@@ -223,6 +231,7 @@ namespace TaskManager.ViewModel
                 Log.Error(ex, "Ошибка при редактировании задачи");
             }
         }
+
         //Метод для обновления изменённой задачи
         public void UpdateTask(TaskModel updatedTask)
         {
@@ -243,7 +252,7 @@ namespace TaskManager.ViewModel
                     existingTask.Deadline = updatedTask.Deadline;
                 }
 
-                // Обновляем отфильтрованный список
+                // После обновления задачи применим фильтрацию
                 FilterTasks();
             }
             catch (InvalidOperationException invOpEx)

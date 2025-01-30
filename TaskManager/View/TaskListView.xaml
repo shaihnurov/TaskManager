@@ -54,7 +54,7 @@
 
         <!-- Список задач -->
         <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" CanContentScroll="True">
-            <ItemsControl ItemsSource="{Binding FilteredTasks}">
+            <ItemsControl ItemsSource="{Binding Tasks}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel Orientation="Vertical" Width="Auto" HorizontalAlignment="Center"
