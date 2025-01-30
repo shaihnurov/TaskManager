@@ -42,10 +42,10 @@
                         </WrapPanel>
 
                         <WrapPanel Grid.Row="3" Orientation="Vertical">
-                            <TextBlock Text="Укажите статус (В процессе/Завершено)" FontWeight="Light" FontSize="18" Margin="40 35 0 0"/>
+                            <TextBlock Text="Укажите статус" FontWeight="Light" FontSize="18" Margin="40 35 0 0"/>
 
-                            <TextBox FontSize="18" Foreground="#3393DF" Margin="20 10 0 0" MinWidth="300" Width="Auto" FontWeight="Light"
-                                 TextWrapping="Wrap" Style="{StaticResource TextBox}" Height="Auto" Text="{Binding Status}"/>
+                            <ComboBox ItemsSource="{Binding StatusList}" Margin="20 10 0 0" MinWidth="300" Width="Auto"
+                                      SelectedItem="{Binding SelectedStatus, Mode=TwoWay}"/>
                         </WrapPanel>
 
                         <WrapPanel Grid.Row="4" Orientation="Vertical" Margin="0 0 0 20">

@@ -21,6 +21,7 @@
 
             <Button Command="{Binding PrintTaskViewCommand}" Content="Печать задач"/>
 
+            <Button Command="{Binding TasksStatisticsViewCommand}" Content="Статистика"/>
             <Button Command="{Binding SyncTasksCommand}" Content="Синхронизировать"/>
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>

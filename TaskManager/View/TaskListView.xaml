@@ -13,105 +13,111 @@
         <service:StatusColorConverter x:Key="StatusColorConverter"/>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" CanContentScroll="True">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-            <!-- Панель фильтров -->
-            <Border Grid.Column="0" Padding="10">
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
-                    <TextBlock Text="Фильтрация по имени" FontSize="15" Foreground="Gray" 
-                               FontWeight="Light" HorizontalAlignment="Center"/>
-                    <TextBox Text="{Binding SelectedName, Mode=TwoWay}" Width="200" Margin="0 10" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Фильтрация по статусу" FontSize="15" Foreground="Gray" 
-                               FontWeight="Light" HorizontalAlignment="Center"/>
-                    <ComboBox ItemsSource="{Binding StatusList}" 
-                              SelectedItem="{Binding SelectedStatus, Mode=TwoWay}" 
-                              Width="200" Margin="0 10" />
+        <!-- Панель фильтров -->
+        <Border Grid.Row="0" Grid.RowSpan="2" Padding="10">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                <TextBlock Text="Фильтрация по имени" FontSize="15" Foreground="Gray" 
+                           FontWeight="Light" HorizontalAlignment="Center"/>
+                <TextBox Text="{Binding SelectedName, Mode=TwoWay}" Width="200" Margin="0 10" />
 
-                    <TextBlock Text="Фильтрация по дате создания" FontSize="15" Foreground="Gray" 
-                               FontWeight="Light" HorizontalAlignment="Center"/>
-                    <DatePicker SelectedDate="{Binding SelectedCreationDate, Mode=TwoWay}" 
-                                Width="200" Margin="0 10"/>
+                <TextBlock Text="Фильтрация по статусу" FontSize="15" Foreground="Gray" 
+                           FontWeight="Light" HorizontalAlignment="Center"/>
+                <ComboBox ItemsSource="{Binding StatusList}" 
+                          SelectedItem="{Binding SelectedStatus, Mode=TwoWay}" 
+                          Width="200" Margin="0 10" />
 
-                    <TextBlock Text="Фильтрация по дедлайну" FontSize="15" Foreground="Gray" 
-                               FontWeight="Light" HorizontalAlignment="Center"/>
-                    <DatePicker SelectedDate="{Binding SelectedDeadline, Mode=TwoWay}" 
-                                Width="200" Margin="0 10" />
-                </StackPanel>
-            </Border>
+                <TextBlock Text="Фильтрация по дате создания" FontSize="15" Foreground="Gray" 
+                           FontWeight="Light" HorizontalAlignment="Center"/>
+                <DatePicker SelectedDate="{Binding SelectedCreationDate, Mode=TwoWay}" 
+                            Width="200" Margin="0 10"/>
 
-            <!-- Список задач -->
-            <Border Grid.Column="1">
-                <ItemsControl ItemsSource="{Binding FilteredTasks}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel Orientation="Vertical" Width="Auto" HorizontalAlignment="Center"
-                                       IsVirtualizing="True" VirtualizationMode="Recycling"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                <TextBlock Text="Фильтрация по дедлайну" FontSize="15" Foreground="Gray" 
+                           FontWeight="Light" HorizontalAlignment="Center"/>
+                <DatePicker SelectedDate="{Binding SelectedDeadline, Mode=TwoWay}" 
+                            Width="200" Margin="0 10" />
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderThickness="0.2" BorderBrush="Black" CornerRadius="10"
-                                    Margin="10" Padding="10" Width="Auto" MaxWidth="800"
-                                    HorizontalAlignment="Center">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="3*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                    </Grid.ColumnDefinitions>
+                <CheckBox Content="Показать «горящие» задачи" FontSize="15" Margin="0 20 0 0"
+                          IsChecked="{Binding ShowUrgentTasks, Mode=TwoWay}" HorizontalAlignment="Center" />
+            </StackPanel>
+        </Border>
 
-                                    <Grid Grid.Column="0">
-                                        <StackPanel Orientation="Vertical">
-                                            <TextBlock Text="{Binding Name}" FontSize="30" FontWeight="Light"
-                                                       TextWrapping="Wrap" Margin="10"/>
+        <!-- Список задач -->
+        <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" CanContentScroll="True">
+            <ItemsControl ItemsSource="{Binding FilteredTasks}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Vertical" Width="Auto" HorizontalAlignment="Center"
+                                   IsVirtualizing="True" VirtualizationMode="Recycling"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-                                            <TextBlock Text="{Binding Description}" FontSize="18" Foreground="#3393DF" 
-                                                       TextWrapping="Wrap" Margin="10" FontWeight="Light"/>
-                                        </StackPanel>
-                                    </Grid>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="0.2" BorderBrush="Black" CornerRadius="10"
+                                Margin="10" Padding="10" Width="Auto" MaxWidth="800"
+                                HorizontalAlignment="Center">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
 
-                                    <Grid Grid.Column="1" VerticalAlignment="Center" Margin="30 0 0 0">
-                                        <StackPanel>
-                                            <WrapPanel>
-                                                <TextBlock Text="Статус: " FontSize="18" Foreground="Gray" FontWeight="Light"/>
-                                                <TextBlock Text="{Binding Status}" FontSize="18" FontWeight="Light"
-                                                           Foreground="{Binding Status, Converter={StaticResource StatusColorConverter}}"/>
-                                            </WrapPanel>
+                                <Grid Grid.Column="0">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Name}" FontSize="30" FontWeight="Light"
+                                                   TextWrapping="Wrap" Margin="10"/>
 
-                                            <WrapPanel>
-                                                <TextBlock Text="Дедлайн: " FontSize="18" Foreground="Gray" FontWeight="Light"/>
-                                                <TextBlock Text="{Binding Deadline, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}" 
-                                                           FontSize="18" Foreground="#3393DF" FontWeight="Light"/>
-                                            </WrapPanel>
-
-                                            <WrapPanel>
-                                                <TextBlock Text="Дата создания: " FontSize="18" Foreground="Gray" FontWeight="Light"/>
-                                                <TextBlock Text="{Binding CreateDate, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}" 
-                                                           FontSize="18" Foreground="#3393DF" FontWeight="Light"/>
-                                            </WrapPanel>
-
-                                            <WrapPanel Margin="0 10 0 0">
-                                                <Button Content="Редактировать" CommandParameter="{Binding}"
-                                                        Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-
-                                                <Button Content="Удалить" CommandParameter="{Binding}"
-                                                        Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                        Margin="10 0 0 0"/>
-                                            </WrapPanel>
-                                        </StackPanel>
-                                    </Grid>
+                                        <TextBlock Text="{Binding Description}" FontSize="18" Foreground="#3393DF" 
+                                                   TextWrapping="Wrap" Margin="10" FontWeight="Light"/>
+                                    </StackPanel>
                                 </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Border>
-        </Grid>
-    </ScrollViewer>
+
+                                <Grid Grid.Column="1" VerticalAlignment="Center" Margin="30 0 0 0">
+                                    <StackPanel>
+                                        <WrapPanel>
+                                            <TextBlock Text="Статус: " FontSize="18" Foreground="Gray" FontWeight="Light"/>
+                                            <TextBlock Text="{Binding Status}" FontSize="18" FontWeight="Light"
+                                                       Foreground="{Binding Status, Converter={StaticResource StatusColorConverter}}"/>
+                                        </WrapPanel>
+
+                                        <WrapPanel>
+                                            <TextBlock Text="Дедлайн: " FontSize="18" Foreground="Gray" FontWeight="Light"/>
+                                            <TextBlock Text="{Binding Deadline, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}" 
+                                                       FontSize="18" Foreground="#3393DF" FontWeight="Light"/>
+                                        </WrapPanel>
+
+                                        <WrapPanel>
+                                            <TextBlock Text="Дата создания: " FontSize="18" Foreground="Gray" FontWeight="Light"/>
+                                            <TextBlock Text="{Binding CreateDate, StringFormat=\{0:dd/MM/yyyy HH:mm:ss\}}" 
+                                                       FontSize="18" Foreground="#3393DF" FontWeight="Light"/>
+                                        </WrapPanel>
+
+                                        <WrapPanel Margin="0 10 0 0">
+                                            <Button Content="Редактировать" CommandParameter="{Binding}"
+                                                    Command="{Binding DataContext.EditTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+
+                                            <Button Content="Удалить" CommandParameter="{Binding}"
+                                                    Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    Margin="10 0 0 0"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

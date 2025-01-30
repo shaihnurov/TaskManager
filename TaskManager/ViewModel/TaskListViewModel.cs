@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using TaskManager.Model;
 using TaskManager.Services;
+using Serilog;
+using System.Windows;
 
 namespace TaskManager.ViewModel
 {
@@ -24,6 +26,7 @@ namespace TaskManager.ViewModel
         #region Свойства для фильтрации
         private string? _selectedName;
         private string? _selectedStatus = "Все";
+        private bool _showUrgentTasks;
         private DateTime? _selectedCreationDate = null;
         private DateTime? _selectedDeadline = null;
 
@@ -42,6 +45,15 @@ namespace TaskManager.ViewModel
             set
             {
                 SetProperty(ref _selectedStatus, value);
+                FilterTasks();
+            }
+        }
+        public bool ShowUrgentTasks
+        {
+            get => _showUrgentTasks;
+            set
+            {
+                SetProperty(ref _showUrgentTasks, value);
                 FilterTasks();
             }
         }
@@ -71,103 +83,178 @@ namespace TaskManager.ViewModel
             _ = LoadTasks();
         }
 
+        //Загрузка задач из БД
         internal async Task LoadTasks()
         {
-            var tasks = await TaskService.GetTasks();
-
-            Tasks.Clear();
-            foreach (var task in tasks)
+            try
             {
-                Tasks.Add(task);
-            }
+                var tasks = await TaskService.GetTasks();
 
-            FilterTasks();
+                Tasks.Clear();
+                foreach (var task in tasks)
+                {
+                    Tasks.Add(task);
+                }
+
+                FilterTasks();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Возникла ошибка при загрузке задач - {ex.Message}");
+                Log.Error(ex, "Ошибка при загрузке задач");
+            }
         }
+        //Метод для фильтрации списка задач
         private void FilterTasks()
         {
-            if (Tasks == null) return;
-
-            var filtered = Tasks.AsEnumerable();
-
-            // Фильтрация по имени
-            if (!string.IsNullOrEmpty(SelectedName))
+            try
             {
-                filtered = filtered.Where(task => task.Name!.Contains(SelectedName, StringComparison.OrdinalIgnoreCase));
+                if (Tasks == null) return;
+
+                var filtered = Tasks.AsEnumerable();
+
+                // Фильтрация по имени
+                if (!string.IsNullOrEmpty(SelectedName))
+                {
+                    filtered = filtered.Where(task => task.Name!.Contains(SelectedName, StringComparison.OrdinalIgnoreCase));
+                }
+
+                // Фильтрация по статусу
+                if (SelectedStatus != "Все")
+                {
+                    filtered = filtered.Where(task => task.Status!.Equals(SelectedStatus, StringComparison.OrdinalIgnoreCase));
+                }
+
+                // Фильтрация по дате создания
+                if (SelectedCreationDate.HasValue)
+                {
+                    filtered = filtered.Where(task => task.CreateDate.Date == SelectedCreationDate.Value.Date);
+                }
+
+                // Фильтрация по дедлайну
+                if (SelectedDeadline.HasValue)
+                {
+                    filtered = filtered.Where(task => task.Deadline.Date == SelectedDeadline.Value.Date);
+                }
+
+                // Фильтрация по "горящим" задачам
+                if (ShowUrgentTasks)
+                {
+                    var now = DateTime.Now;
+                    filtered = filtered.Where(task => (task.Deadline - now).TotalHours <= 24 && task.Status == "В процессе");
+                }
+
+                FilteredTasks.Clear();
+                foreach (var task in filtered)
+                {
+                    FilteredTasks.Add(task);
+                }
             }
-
-            // Фильтрация по статусу
-            if (SelectedStatus != "Все")
+            catch (ArgumentNullException nullEx)
             {
-                filtered = filtered.Where(task => task.Status!.Equals(SelectedStatus, StringComparison.OrdinalIgnoreCase));
+                MessageBox.Show($"Ошибка при фильтрации задач: найдено null значение - {nullEx.Message}");
+                Log.Error(nullEx, "Ошибка при фильтрации задач: найдено null значение");
             }
-
-            // Фильтрация по дате создания
-            if (SelectedCreationDate.HasValue)
+            catch (InvalidOperationException invEx)
             {
-                filtered = filtered.Where(task => task.CreateDate.Date == SelectedCreationDate.Value.Date);
+                MessageBox.Show($"Ошибка при фильтрации задач: некорректная операция - {invEx.Message}");
+                Log.Error(invEx, "Ошибка при фильтрации задач: некорректная операция");
             }
-
-            // Фильтрация по дедлайну
-            if (SelectedDeadline.HasValue)
+            catch (Exception ex)
             {
-                filtered = filtered.Where(task => task.Deadline.Date == SelectedDeadline.Value.Date);
-            }
-
-            FilteredTasks.Clear();
-            foreach (var task in filtered)
-            {
-                FilteredTasks.Add(task);
+                MessageBox.Show($"Возникла ошибка при фильтрации задач - {ex.Message}");
+                Log.Error(ex, "Ошибка при фильтрации задач");
             }
         }
+        //Метод удаления задач
         [RelayCommand]
         private async Task DeleteTask(object parameter)
         {
-            if (parameter is TaskModel currentTask)
+            try
             {
-                // Очищаем ссылки на объект перед удалением
-                currentTask.Name = null;
-                currentTask.Description = null;
-                currentTask.Status = null;
+                if (parameter is TaskModel currentTask)
+                {
+                    // Очищаем ссылки на объект перед удалением
+                    currentTask.Name = null;
+                    currentTask.Description = null;
+                    currentTask.Status = null;
 
-                Tasks.Remove(currentTask);
-                FilteredTasks.Remove(currentTask);
+                    Tasks.Remove(currentTask);
+                    FilteredTasks.Remove(currentTask);
 
-                await TaskService.DeleteTask(currentTask);
+                    await TaskService.DeleteTask(currentTask);
 
-                // Запускаем сборщик мусора вручную
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                    // Запускаем сборщик мусора вручную
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
             }
-
+            catch (ArgumentNullException nullEx)
+            {
+                MessageBox.Show($"Возникла ошибка при удалении задачи: передан null объект задачи - {nullEx.Message}");
+                Log.Error(nullEx, "Ошибка при удалении задачи: передан null объект задачи");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Возникла ошибка при удалении задачи - {ex.Message}");
+                Log.Error(ex, "Ошибка при удалении задачи");
+            }
         }
+        //Метод для вызова View редактирования
         [RelayCommand]
         private void EditTask(object parameter)
         {
-            if (parameter is TaskModel currentTask)
+            try
             {
-                EditTaskViewModel editTaskViewModel = new(currentTask, _mainViewModel, this);
-                _mainViewModel.CurrentView = editTaskViewModel;
+                if (parameter is TaskModel currentTask)
+                {
+                    EditTaskViewModel editTaskViewModel = new(currentTask, _mainViewModel, this);
+                    _mainViewModel.CurrentView = editTaskViewModel;
+                }
+            }
+            catch (ArgumentException argEx)
+            {
+                MessageBox.Show($"Возникла ошибка при редактировании задачи: передан некорректный параметр - {argEx.Message}");
+                Log.Error(argEx, "Ошибка при редактировании задачи: передан некорректный параметр");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Возникла ошибка при редактировании задачи - {ex.Message}");
+                Log.Error(ex, "Ошибка при редактировании задачи");
             }
         }
+        //Метод для обновления изменённой задачи
         public void UpdateTask(TaskModel updatedTask)
         {
-            if (updatedTask == null) return;
-
-            // Ищем задачу в коллекции по Id
-            var existingTask = Tasks.FirstOrDefault(t => t.Id == updatedTask.Id);
-
-            if (existingTask != null)
+            try
             {
-                // Обновляем свойства
-                existingTask.Name = updatedTask.Name;
-                existingTask.Description = updatedTask.Description;
-                existingTask.Status = updatedTask.Status;
-                existingTask.CreateDate = updatedTask.CreateDate;
-                existingTask.Deadline = updatedTask.Deadline;
-            }
+                if (updatedTask == null) return;
 
-            // Обновляем отфильтрованный список
-            FilterTasks();
+                // Ищем задачу в коллекции по Id
+                var existingTask = Tasks.FirstOrDefault(t => t.Id == updatedTask.Id);
+
+                if (existingTask != null)
+                {
+                    // Обновляем свойства
+                    existingTask.Name = updatedTask.Name;
+                    existingTask.Description = updatedTask.Description;
+                    existingTask.Status = updatedTask.Status;
+                    existingTask.CreateDate = updatedTask.CreateDate;
+                    existingTask.Deadline = updatedTask.Deadline;
+                }
+
+                // Обновляем отфильтрованный список
+                FilterTasks();
+            }
+            catch (InvalidOperationException invOpEx)
+            {
+                Log.Error(invOpEx, "Ошибка обновления коллекции");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Возникла ошибка при обновлении задачи - {ex.Message}");
+                Log.Error(ex, "Ошибка при обновлении задачи");
+            }
         }
     }
 }

@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="TaskManager.View.TasksStatisticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TaskManager.View"
+             xmlns:viewModel="clr-namespace:TaskManager.ViewModel"
+             mc:Ignorable="d" Style="{StaticResource Page_Style}"
+             d:DesignHeight="750" d:DesignWidth="1200" d:Background="White">
+    
+    <Grid>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+            <Border BorderThickness="0.2" BorderBrush="Black" Background="Transparent" CornerRadius="20"
+                    Margin="0 50 0 0" Padding="35" Width="Auto" MaxWidth="700" Height="Auto" HorizontalAlignment="Stretch">
+
+                <Grid VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Общая статистика" FontSize="40" VerticalAlignment="Top" Grid.Row="0"
+                       TextWrapping="Wrap" FontWeight="Light" HorizontalAlignment="Center"/>
+
+                    <WrapPanel Grid.Row="1" Orientation="Horizontal">
+                        <TextBlock Text="Количество задач" FontWeight="Light" FontSize="18" Margin="40 35 0 0"/>
+
+                        <TextBlock FontSize="18" Foreground="#3393DF" Margin="10 35 0 0" Width="Auto" FontWeight="Light"
+                                 TextWrapping="Wrap" Height="Auto" Text="{Binding TotalTasks}"/>
+                    </WrapPanel>
+
+                    <WrapPanel Grid.Row="2" Orientation="Horizontal">
+                        <TextBlock Text="Задач в процессе" FontWeight="Light" FontSize="18" Margin="40 35 0 0"/>
+
+                        <TextBlock FontSize="18" Foreground="#3393DF" Margin="10 35 0 0" Width="Auto" FontWeight="Light"
+                                 TextWrapping="Wrap" Height="Auto" Text="{Binding TasksInProgress}"/>
+                    </WrapPanel>
+
+                    <WrapPanel Grid.Row="3" Orientation="Horizontal">
+                        <TextBlock Text="Завершенных задач" FontWeight="Light" FontSize="18" Margin="40 35 0 0"/>
+
+                        <TextBlock FontSize="18" Foreground="#3393DF" Margin="10 35 0 0" Width="Auto" FontWeight="Light"
+                                 TextWrapping="Wrap" Height="Auto" Text="{Binding CompletedTasks}"/>
+                    </WrapPanel>
+
+                    <WrapPanel Grid.Row="4" Orientation="Horizontal">
+                        <TextBlock Text="Задач с дедлайном меньше суток" FontWeight="Light" FontSize="18" Margin="40 35 0 0"/>
+                        <TextBlock FontSize="18" Foreground="#3393DF" Margin="10 35 0 0" Width="Auto" FontWeight="Light"
+                                   TextWrapping="Wrap" Height="Auto" Text="{Binding TasksDueIn24Hours}"/>
+                    </WrapPanel>
+
+                    <WrapPanel Grid.Row="5" Orientation="Horizontal">
+                        <TextBlock Text="Процент завершённых задач" FontWeight="Light" FontSize="18" Margin="40 35 0 0"/>
+                        <TextBlock FontSize="18" Foreground="#3393DF" Margin="10 35 0 0" Width="Auto" FontWeight="Light"
+                                   TextWrapping="Wrap" Height="Auto" Text="{Binding CompletionPercentage, StringFormat={}{0:F2}%}"/>
+                    </WrapPanel>
+
+                </Grid>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>
